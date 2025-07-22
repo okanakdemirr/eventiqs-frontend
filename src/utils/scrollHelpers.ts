@@ -1,31 +1,52 @@
+// Scroll utility functions for navigation
+export const scrollToTop = (behavior: 'auto' | 'smooth' = 'smooth') => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior
+  });
+};
+
 export const resetScrollPosition = () => {
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  // Immediate scroll reset for instant navigation
+  window.scrollTo(0, 0);
+  
+  // Also reset any scrollable containers
+  const scrollableElements = document.querySelectorAll('[data-scrollable]');
+  scrollableElements.forEach(element => {
+    element.scrollTop = 0;
+  });
+  
+  // Reset body scroll position as well
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
 };
 
-export const smoothScrollTo = (elementId: string) => {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
+export const smoothScrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  });
 };
 
-export const scrollToTop = () => {
-  window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-};
-
-export const getScrollPosition = () => {
-  return {
-    x: window.pageXOffset || document.documentElement.scrollLeft,
-    y: window.pageYOffset || document.documentElement.scrollTop
+// Hook for scroll reset on navigation
+export const useScrollReset = () => {
+  const resetScroll = (smooth = false) => {
+    if (smooth) {
+      smoothScrollToTop();
+    } else {
+      resetScrollPosition();
+    }
   };
+
+  return { resetScroll };
 };
 
-export const isElementInViewport = (element: HTMLElement) => {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
+// Enhanced scroll reset for React components
+export const resetScrollOnMount = () => {
+  // Use requestAnimationFrame to ensure DOM is ready
+  requestAnimationFrame(() => {
+    resetScrollPosition();
+  });
 };
