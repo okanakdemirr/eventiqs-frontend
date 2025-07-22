@@ -1,1 +1,1 @@
-# eventiqs-frontend
+bolt-eventiqs-app
