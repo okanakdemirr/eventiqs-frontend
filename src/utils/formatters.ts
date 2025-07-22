@@ -1,65 +1,45 @@
-export const formatDate = (date: string | Date): string => {
-  const d = new Date(date);
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
+export const formatTime = (time: string): string => {
+  return time;
+};
+
+export const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
     day: 'numeric'
   });
 };
 
-export const formatTime = (date: string | Date): string => {
-  const d = new Date(date);
-  return d.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
-};
-
-export const formatDateTime = (date: string | Date): string => {
-  return `${formatDate(date)} at ${formatTime(date)}`;
-};
-
-export const formatRelativeTime = (date: string | Date): string => {
-  const now = new Date();
-  const then = new Date(date);
-  const diffInSeconds = Math.floor((now.getTime() - then.getTime()) / 1000);
-
-  if (diffInSeconds < 60) {
-    return 'Just now';
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `${minutes} min ago`;
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  } else {
-    const days = Math.floor(diffInSeconds / 86400);
-    return `${days} day${days > 1 ? 's' : ''} ago`;
+export const formatAttendeesCount = (count: number): string => {
+  if (count >= 1000) {
+    return `+${(count / 1000).toFixed(0)},000 attendees online`;
   }
+  return `${count} attendees online`;
 };
 
 export const formatPhoneNumber = (phone: string): string => {
-  const cleaned = phone.replace(/\D/g, '');
-  const match = cleaned.match(/^(\d{1})(\d{3})(\d{3})(\d{4})$/);
-  if (match) {
-    return `+${match[1]} (${match[2]}) ${match[3]}-${match[4]}`;
-  }
-  return phone;
+  // Basic phone number formatting
+  return phone.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
 };
 
-export const formatCurrency = (amount: number, currency = 'USD'): string => {
+export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency
+    currency: 'USD'
   }).format(amount);
 };
 
-export const formatPercentage = (value: number, decimals = 1): string => {
-  return `${value.toFixed(decimals)}%`;
-};
+export const formatRelativeTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
 
-export const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  if (diffInMinutes < 1) return 'Just now';
+  if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
+  
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays}d ago`;
 };
